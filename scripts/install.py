@@ -160,8 +160,11 @@ class Installer:
                 if not self.dry:
                     dst.unlink()
             return
+        # OpenCode V2 loads the plugin as an ES module and needs a default export. A raw
+        # Windows path ("C:\...") is not a valid ESM specifier, so the source is referenced
+        # by file:// URL.
         shim = (f"// agent-engineer OpenCode plugin shim (installed by scripts/install.py)\n"
-                f"export {{ AgentEngineer }} from {json.dumps(str(src))};\n")
+                f"export {{ default }} from {json.dumps(src.as_uri())};\n")
         if dst.exists() and dst.read_text() == shim:
             return
         self.say(f"write {dst}")

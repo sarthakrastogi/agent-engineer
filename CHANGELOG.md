@@ -2,6 +2,23 @@
 
 ## 0.3.0 — unreleased
 
+OpenCode V2 support:
+- The OpenCode adapter now targets the V2 plugin API (default export with `id` and
+  `setup(ctx)`). Under V2 the V1 adapter failed to load with "Plugin must export a
+  default definition with an id and an effect or setup function", so every hook was
+  silently dead on OpenCode 2.x.
+- V1 hook names map to their V2 equivalents: `experimental.chat.system.transform` becomes
+  `ctx.session.hook("context")`, `tool.execute.before` and `tool.execute.after` become
+  `ctx.tool.hook("execute.before")` and `ctx.tool.hook("execute.after")`, and the `event`
+  hook becomes `ctx.event.subscribe()`.
+- The install shim points at the adapter by `file://` URL and re-exports `default`. A raw
+  Windows path is not a valid ES module specifier, so the shim threw
+  `ERR_UNSUPPORTED_ESM_URL_SCHEME` on Windows.
+- The hook interpreter is platform-dependent (`python` on Windows, `python3` elsewhere).
+  `python3` is a Microsoft Store stub on Windows and exited 9009 without running the hook.
+- OpenCode V2 renamed the shell tool from `bash` to `shell`; both are accepted so the
+  post-bash hook still fires.
+
 From the first behavioural A/B (`evals/ab/`), where v0.2.0 scored the same as no plugin:
 - New `prompt-submit` hook (Claude Code, Codex): in an LLM project, names the agent-* skill(s)
   a request needs ("add a tool that issues refunds" → `agent-guardrails`, `agent-tools`).
