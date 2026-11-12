@@ -2,6 +2,8 @@
 
 ## 0.4.0 — unreleased
 
+- Secret guard: OpenCode's `patch` tool sends its text as `patchText`, which the pre-write
+  hook didn't scan, so a key written through `patch` got past the guard. It's scanned now.
 - New `agentforce` skill for Salesforce Agentforce agents built in the new Agentforce
   Builder: Agent Script language, actions and target schemes, architecture patterns,
   connections and channels (messaging, web, Slack, voice, Agent API), Flow and Apex
