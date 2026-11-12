@@ -25,7 +25,7 @@
 
 - agent-engineer is a free and fully open-source plugin. It works on Claude Code, Codex CLI, Cursor, OpenCode and Gemini CLI.
 
-- It contains 11 skills, 4 subagents and 5 hooks. The skills carry agent-engineering knowledge (tools, prompting, context, RAG, evals, tracing, guardrails, production).
+- It contains 12 skills, 4 subagents and 5 hooks. The skills carry agent-engineering knowledge (tools, prompting, context, RAG, evals, tracing, guardrails, production), plus a platform skill for Salesforce Agentforce.
 
 - In a blinded A/B test on 6 agent tasks, Claude Code (Opus 5.5) met 53% of requirements with the plugin vs 34% without.
 
@@ -72,6 +72,7 @@ There are no special commands. Say what you'd normally say, and the router skill
 | "Switch to a cheaper model" | `agent-production` | Model as config, an eval comparison as the gate, a cost estimate |
 | "Add tracing" | `agent-observability` | OTel GenAI spans per LLM and tool call, token usage, correlation IDs, PII handling |
 | "Build an agent that answers from these docs" | `agent-design` + `agent-rag` | Simplest shape that fits, citations, abstention, an eval set |
+| "Add a refund action to our Agentforce agent" | `agentforce` + `agent-guardrails` | Flow or Apex target, verified-identity binding, gated confirmation, agent-user permissions, a test spec |
 
 To call a skill directly: `/agent-engineer:agent-evals` in Claude Code, `$agent-evals` in Codex.
 
@@ -79,7 +80,7 @@ To call a skill directly: `/agent-engineer:agent-evals` in Claude Code, `$agent-
 
 ## What's inside
 
-### 11 skills
+### 12 skills
 
 | Skill | Use it for |
 |---|---|
@@ -94,6 +95,7 @@ To call a skill directly: `/agent-engineer:agent-evals` in Claude Code, `$agent-
 | `agent-accuracy` | The debugging loop: reproduce, localise, least powerful fix, measure, log |
 | `agent-guardrails` | Prompt injection, the lethal trifecta, permissions, approvals, red-teaming |
 | `agent-production` | Reliability, cost and latency, CI/CD, rollouts, model migration |
+| `agentforce` | Salesforce Agentforce: Agent Script, actions (Flow, Apex, Prompt Builder, Integration Procedures, MCP), Data 360 grounding, channels, Trust Layer, trace SQL, `sf agent` testing and release |
 
 ### 4 subagents
 

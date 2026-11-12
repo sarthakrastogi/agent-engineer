@@ -10,7 +10,7 @@ description: >-
   (agent-rag); write-tool permissions pair with agent-guardrails.
 license: MIT
 metadata:
-  version: 0.3.0
+  version: 0.4.0
 ---
 
 # Agent tools

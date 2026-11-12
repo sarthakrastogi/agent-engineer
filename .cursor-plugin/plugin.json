@@ -1,7 +1,7 @@
 {
   "name": "agent-engineer",
   "description": "A senior AI agent engineer for your coding agent: design, tools, prompting, context, RAG, evals, observability, accuracy, guardrails and production for LLM agents.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "Sarthak Rastogi"
   },
@@ -11,7 +11,9 @@
     "llm",
     "rag",
     "evals",
-    "observability"
+    "observability",
+    "salesforce",
+    "agentforce"
   ],
   "skills": "./skills/",
   "agents": "./adapters/cursor/agents/",

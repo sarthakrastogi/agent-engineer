@@ -65,6 +65,9 @@ SOURCE_SUFFIXES = (".py", ".ts", ".tsx", ".js", ".mjs")
 MAX_SCANNED_SOURCES = 40
 PY_IMPORT = re.compile(r"^\s*(?:from|import)\s+([A-Za-z_][\w.]*)", re.M)
 JS_IMPORT = re.compile(r"(?:\bfrom|\brequire\(|\bimport\()\s*[\"']([^\"'.][^\"']*)[\"']")
+# Salesforce Agentforce: no manifest dependency, so detect agent metadata in a DX project.
+AGENTFORCE_DIRS = {"aiAuthoringBundles", "genAiPlannerBundles", "genAiPromptTemplates", "bots"}
+MAX_SFDX_DIRS = 400
 EVAL_PATHS = ("evals", "eval", "tests/evals", "tests/eval", "promptfooconfig.yaml",
               "promptfooconfig.yml")
 
@@ -84,7 +87,10 @@ PLACEHOLDER = re.compile(r"(x{6,}|your[_\-]?|example|placeholder|dummy|redacted|
                          re.I)
 
 BEHAVIOUR_PATH = re.compile(r"(^|/)(prompts?|instructions|system[_\-]?prompts?)(/|\.|_|-)|"
-                            r"\.(prompt|prompty|j2|jinja2?)$", re.I)
+                            r"\.(prompt|prompty|j2|jinja2?)$|"
+                            r"\.agent$|\.genAiPromptTemplate-meta\.xml$|"
+                            r"\.genAiPlannerBundle(-meta\.xml)?$|\.aiEvaluationDefinition-meta\.xml$",
+                            re.I)
 # Markers of prompt text. Also used on the lines around an edit, so keep it to prompts.
 PROMPT_CONTENT = (
     r"system_prompt|systemPrompt|\b(?:[A-Z]+_)*SYSTEM(?:_[A-Z]+)*\s*=[^=]|\bsystem\s*[=:][^=]|"
@@ -115,6 +121,9 @@ SHELL_SEPARATORS = re.compile(r"&&|\|\||[;|&\n]")
 
 # Request wording → the skill that carries the checks for it. Order = priority.
 SKILL_HINTS = [
+    ("agentforce", r"agentforce|agent ?script|\.agent\b|einstein|prompt builder|"
+                   r"prompt templates?|data cloud|data 360|omnistudio|integration procedure|"
+                   r"salesforce|\bsfdx\b|\bsf agent\b"),
     ("agent-accuracy", r"hallucinat|makes? (things |stuff )?up|invent|made[- ]up|wrong answers?|"
                        r"inaccura|flaky|accuracy (dropped|is)"),
     # Guardrails: the agent gains the power to act, or untrusted input reaches it.
@@ -201,13 +210,29 @@ def matches(deps: set[str], libs: set[str]) -> list[str]:
     return sorted(hits)
 
 
+def is_agentforce_project(root: Path) -> bool:
+    """A Salesforce DX project holding agent, planner, prompt-template or bot metadata."""
+    if not (root / "sfdx-project.json").is_file():
+        return False
+    seen = 0
+    for dirpath, dirnames, _ in os.walk(root):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")
+                       and d not in ("node_modules", "venv", "dist", "build")]
+        if AGENTFORCE_DIRS & set(dirnames):
+            return True
+        seen += 1
+        if seen > MAX_SFDX_DIRS:
+            break
+    return False
+
+
 def profile(root: Path) -> dict:
     deps = dep_names(root)
     if not matches(deps, LLM_LIBS):
         deps |= import_names(root)
     art = root / ARTIFACT_DIR
     return {
-        "llm": matches(deps, LLM_LIBS),
+        "llm": matches(deps, LLM_LIBS) or is_agentforce_project(root),
         "tracing": matches(deps, TRACING_LIBS),
         "eval_libs": matches(deps, EVAL_LIBS),
         "eval_paths": [p for p in EVAL_PATHS if (root / p).exists()],
@@ -271,6 +296,9 @@ def is_eval_command(cmd: str) -> bool:
             continue
         program = os.path.basename(tokens[0])
         named = any(EVAL_TOKEN.search(t) for t in tokens)
+        if program == "sf" and tokens[1:3] == ["agent", "test"] and \
+                len(tokens) > 3 and tokens[3] in ("run", "resume"):
+            return True
         if program == "cd":
             in_eval_dir = named
         elif program not in READ_ONLY_COMMANDS and (named or in_eval_dir):

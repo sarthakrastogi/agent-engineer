@@ -10,7 +10,7 @@ description: >-
   (agent-context), or judge design beyond retrieval metrics (agent-evals).
 license: MIT
 metadata:
-  version: 0.3.0
+  version: 0.4.0
 ---
 
 # Agent RAG

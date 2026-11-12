@@ -10,7 +10,7 @@ description: >-
   that skill directly instead.
 license: MIT
 metadata:
-  version: 0.3.0
+  version: 0.4.0
 ---
 
 # Agent engineer
@@ -34,6 +34,8 @@ lowest layer that explains the failure; add a layer only on evidence.
 Wrong answers or hallucinations with no obvious layer → `agent-accuracy` localises them.
 New agent → `agent-design`, then tools → prompting → observability → evals.
 About to launch → `agent-production` → `assets/launch-checklist.md`.
+Salesforce Agentforce (`.agent` files, Agent Script, `sf agent`) → `agentforce`, which maps
+these skills onto the platform.
 
 ## Shortcuts: the user already has something
 

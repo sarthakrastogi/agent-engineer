@@ -10,7 +10,7 @@ description: >-
   and cost/latency fixes (agent-production), or stopping PII leaks (agent-guardrails).
 license: MIT
 metadata:
-  version: 0.3.0
+  version: 0.4.0
 ---
 
 # Agent observability

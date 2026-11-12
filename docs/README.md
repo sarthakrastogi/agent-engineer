@@ -30,7 +30,7 @@ plugin, graded blind.
 | | |
 |---|---|
 | **What it does** | Loads the right specialist knowledge when you work on an LLM agent, blocks API keys from being written into code, and stops the assistant claiming an unmeasured change is an improvement |
-| **What's in it** | 11 skills, 4 subagents, 5 hooks, one shared Python hook script, adapters for 5 coding assistants |
+| **What's in it** | 12 skills, 4 subagents, 5 hooks, one shared Python hook script, adapters for 5 coding assistants |
 | **Measured effect** | Across 6 realistic agent tasks graded blind, Claude Code (Opus 5.5) met **53%** of a senior-engineer checklist with the plugin vs **34%** without: **+19 points (95% CI +14 to +25)**. On the 2 tasks held out from all tuning: **+10 points (+2 to +19)** |
 | **Biggest wins** | Refund-tool safeguards (4% → 44%), a well-specified HR Q&A agent (29% → 62%), not claiming a prompt or model change is better without measuring it |
 | **Not fixed** | It doesn't reliably produce prompt-injection-aware designs, identity checks, prompt caching or eval sets. Those stayed at or near 0 in both arms |
@@ -343,7 +343,7 @@ show the plugin ahead; the auditor's effect is smaller.
 flowchart TB
     subgraph Plugin["agent-engineer plugin"]
         direction TB
-        S["11 skills<br/>skills/*/SKILL.md<br/>+ references/ + assets/"]
+        S["12 skills<br/>skills/*/SKILL.md<br/>+ references/ + assets/"]
         A["4 subagents<br/>agents/*.md"]
         H["hooks/ae_hook.py<br/>one script, every event"]
         Ad["adapters/<br/>Codex · Cursor · OpenCode · Gemini"]
@@ -463,6 +463,7 @@ add a layer only when evidence shows the simpler one fails.
 | `agent-accuracy` | The debugging loop: reproduce, localise, least powerful fix, measure | "It hallucinates", "worse after the model upgrade" |
 | `agent-guardrails` | Prompt injection, the lethal trifecta, permissions, approvals, red-teaming | "It can send email now", "third-party MCP server" |
 | `agent-production` | Reliability, cost, latency, rollouts, model migration, incidents | "Too slow / too expensive", "switch models safely" |
+| `agentforce` | Salesforce Agentforce: Agent Script, actions, Prompt Builder, Data 360, OmniStudio, channels, Trust Layer, trace SQL, `sf agent` CLI | "Add a flow action to our agent", "why did the agent skip verification?" |
 
 Each skill is a short `SKILL.md` (under 8 KB, so it fits every assistant's limits) with core
 rules, a workflow and outputs. Depth lives in `references/` files that the assistant reads

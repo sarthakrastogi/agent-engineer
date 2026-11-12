@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0 — unreleased
+
+- New `agentforce` skill for Salesforce Agentforce agents built in the new Agentforce
+  Builder: Agent Script language, actions and target schemes, architecture patterns,
+  connections and channels (messaging, web, Slack, voice, Agent API), Flow and Apex
+  actions, Prompt Builder, Data 360 grounding, OmniStudio Integration Procedures, external
+  integration and multi-agent (MCP, A2A, Agent Fabric), Custom Lightning Types, Trust Layer
+  and guardrails, observability with trace SQL, testing, the `sf agent` lifecycle,
+  coding-assistant tooling, and limits. 16 reference files, sourced from the open-source
+  Agent Script compiler and docs, Salesforce's official recipes and skills repos, and
+  Trailhead; thinly sourced facts are marked "(verify in your org)". Unevaluated: no A/B
+  run yet.
+- Hook: a Salesforce DX project with agent, planner, prompt-template or bot metadata counts
+  as an LLM project; edits to `.agent`, prompt-template, planner-bundle and test-definition
+  files count as behaviour changes; `sf agent test run|resume` counts as running evals;
+  Agentforce wording hints the `agentforce` skill.
+
 ## 0.3.0 — unreleased
 
 From the first behavioural A/B (`evals/ab/`), where v0.2.0 scored the same as no plugin:
