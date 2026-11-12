@@ -346,7 +346,7 @@ def save_state(session: str, state: dict) -> None:
 # --------------------------------------------------------------------------- payloads
 
 def strings_in(obj, keys=("content", "new_string", "newString", "new_str", "text", "patch",
-                          "input", "contents", "file_text", "new_source")) -> str:
+                          "patchText", "input", "contents", "file_text", "new_source")) -> str:
     """Collect text being written, across harness tool-input shapes."""
     out: list[str] = []
     if isinstance(obj, dict):
