@@ -13,7 +13,9 @@
     "evals",
     "observability",
     "salesforce",
-    "agentforce"
+    "agentforce",
+    "aws",
+    "bedrock-agentcore"
   ],
   "skills": "./skills/",
   "agents": "./adapters/cursor/agents/",

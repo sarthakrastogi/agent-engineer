@@ -16,6 +16,8 @@
     "prompt-engineering",
     "context-engineering",
     "salesforce",
-    "agentforce"
+    "agentforce",
+    "aws",
+    "bedrock-agentcore"
   ]
 }

@@ -16,6 +16,17 @@
   as an LLM project; edits to `.agent`, prompt-template, planner-bundle and test-definition
   files count as behaviour changes; `sf agent test run|resume` counts as running evals;
   Agentforce wording hints the `agentforce` skill.
+- New `agentcore` skill for Amazon Bedrock AgentCore (as of November 2026): the harness
+  ("agent builder") vs code on Runtime vs Bedrock Agents Classic migration, the `@aws/agentcore`
+  CLI v1, skills, Runtime, MCP servers, Gateway, built-in tools, multi-agent and Registry,
+  Identity (JWT, OAuth, on-behalf-of), Memory, Policy and guardrails, deployment and IaC,
+  observability, operations, and evaluations. 15 reference files plus a production-pinned
+  `harness.yaml` and a launch checklist, sourced from the AgentCore developer guide, API
+  references, release notes, the CLI/SDK repos and their GitHub issues, and fact-checked in
+  a second pass; conflicting or thin facts are marked "(unverified)". Unevaluated: no A/B
+  run yet.
+- Hook: an `@aws/agentcore` CLI project (`agentcore/agentcore.json`) counts as an LLM project;
+  AgentCore wording hints the `agentcore` skill.
 
 ## 0.3.0 — unreleased
 
