@@ -124,6 +124,8 @@ SKILL_HINTS = [
     ("agentforce", r"agentforce|agent ?script|\.agent\b|einstein|prompt builder|"
                    r"prompt templates?|data cloud|data 360|omnistudio|integration procedure|"
                    r"salesforce|\bsfdx\b|\bsf agent\b"),
+    ("agentcore", r"agent ?core|bedrock[- ]agentcore|harness\.yaml|agentcore\.json|"
+                  r"invoke_?(agent_?runtime|harness)|bedrock agents? classic"),
     ("agent-accuracy", r"hallucinat|makes? (things |stuff )?up|invent|made[- ]up|wrong answers?|"
                        r"inaccura|flaky|accuracy (dropped|is)"),
     # Guardrails: the agent gains the power to act, or untrusted input reaches it.
@@ -226,13 +228,21 @@ def is_agentforce_project(root: Path) -> bool:
     return False
 
 
+def is_agentcore_project(root: Path) -> bool:
+    """An @aws/agentcore CLI project. Harness-only projects are YAML, with no LLM dependency."""
+    return (root / "agentcore" / "agentcore.json").is_file()
+
+
 def profile(root: Path) -> dict:
     deps = dep_names(root)
     if not matches(deps, LLM_LIBS):
         deps |= import_names(root)
+    llm = matches(deps, LLM_LIBS)
+    if is_agentcore_project(root) and "bedrock-agentcore" not in llm:
+        llm.append("bedrock-agentcore")
     art = root / ARTIFACT_DIR
     return {
-        "llm": matches(deps, LLM_LIBS) or is_agentforce_project(root),
+        "llm": llm or is_agentforce_project(root),
         "tracing": matches(deps, TRACING_LIBS),
         "eval_libs": matches(deps, EVAL_LIBS),
         "eval_paths": [p for p in EVAL_PATHS if (root / p).exists()],

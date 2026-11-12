@@ -1,0 +1,77 @@
+# Production-pinned harness template for @aws/agentcore CLI v1 (app/<name>/harness.yaml).
+# Model, prompt, truncation and allowedTools have managed defaults that change if omitted; keep them set.
+# Field names and nesting follow the Harness API (docs/harness-project-configuration.md in
+# aws/agentcore-cli). Unknown root fields fail the read. Replace every <...> and example ARN.
+# The system prompt lives next to this file in system-prompt.md (never a path in YAML).
+
+name: <assistant>                       # [a-zA-Z][a-zA-Z0-9_]*; project+target+name <= 40 chars
+
+model:
+  bedrockModelConfig:
+    modelId: <global.anthropic.claude-sonnet-5-5>   # pin; API default is "current recommended model"
+    apiFormat: converse_stream
+    maxTokens: 4096                     # per model call
+    # temperature: leave unset for Claude Sonnet 5 / 5.5 (they reject it)
+
+# Explicit allowlist. ["*"] or omitted = every tool incl. shell and write, and grows over time.
+# Never [] as deny-all (the CDK mapper drops it). Does not restrict `harness exec` / `harness shell`;
+# deny bedrock-agentcore:InvokeAgentRuntimeCommand and ...CommandShell in IAM for non-operators.
+allowedTools:
+  - "@builtin/read"                     # one built-in; "@builtin" = all of them, incl. shell/write
+  - "@builtin/todo_write"
+  - "@company_tools"                    # every tool from the tools entry named company_tools
+
+tools:
+  - name: company_tools
+    type: agentcore_gateway             # shared tools, OAuth to backends and Cedar Policy live here
+    config:
+      agentCoreGateway:
+        gatewayArn: arn:aws:bedrock-agentcore:<region>:<account>:gateway/<gateway-id>
+        outboundAuth:
+          awsIam: {}                    # arrives as the execution role; per-user Policy needs oauth/JWT
+
+# Memory: decide deliberately. In this file, no `memory:` key = disabled; the API default is on.
+# Managed memory bills; pass actorId per invoke from the validated caller identity.
+# To turn it off explicitly: `memory: { disabled: {} }`.
+memory:
+  managedMemoryConfiguration:
+    strategies: [SEMANTIC, USER_PREFERENCE]
+    eventExpiryDuration: 30             # days, 3-365
+
+truncation:
+  strategy: sliding_window
+  config:
+    slidingWindow:
+      messagesCount: 40
+
+# Per-invocation limits (maxTokens = total output tokens across all model calls).
+# Step Functions callers: timeoutSeconds <= 900.
+maxIterations: 25
+maxTokens: 20000
+timeoutSeconds: 600
+
+skills:                                 # fetched on a session's first invoke; a harness version
+  - s3:                                 # does NOT pin content. Use an immutable per-release prefix.
+      uri: s3://<skills-bucket>/releases/<2026-11-12-r1>/support/
+
+environment:                            # session lifetime, not invocation duration
+  agentCoreRuntimeEnvironment:
+    lifecycleConfiguration:             # seconds, 60-28800; idle <= maxLifetime
+      idleRuntimeSessionTimeout: 900    # memory bills until idle timeout; shorter = cheaper
+      maxLifetime: 28800
+
+environmentVariables:                   # plaintext strings (quote numbers), <= 50, < 4 KB total; no secrets
+  LOG_LEVEL: info
+
+# Omit for IAM (SigV4) callers. SigV4 carries no end-user identity to tools; use JWT when
+# tools, Policy or memory must know the user. allowedClients matches the `client_id` claim,
+# which Entra tokens lack: for Entra use allowedAudience.
+authorizerConfiguration:
+  customJWTAuthorizer:
+    discoveryUrl: <https-issuer>/.well-known/openid-configuration   # HTTPS, this exact suffix
+    allowedAudience:
+      - <api://app-id>
+
+tags:
+  team: <team>
+  environment: <dev>

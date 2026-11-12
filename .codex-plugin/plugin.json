@@ -9,7 +9,9 @@
     "evals",
     "observability",
     "salesforce",
-    "agentforce"
+    "agentforce",
+    "aws",
+    "bedrock-agentcore"
   ],
   "skills": "./skills/",
   "hooks": "./hooks/codex.json"
